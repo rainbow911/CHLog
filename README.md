@@ -3,9 +3,9 @@
 ## 说明
 
 * 实现日志打印功能
-    * 1、打印网络请求的日志
-    * 2、打印 Print 日志   
-
+    * 1、打印网络请求的日志，需要配合 [CHHook](https://github.com/rainbow911/CHHook) 使用
+    * 2、打印 Print 日志
+ 
 ## 使用说明：
 
 1. Podfile中添加：`pod 'CHLog'`
