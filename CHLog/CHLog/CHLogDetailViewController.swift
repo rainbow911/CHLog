@@ -6,6 +6,8 @@
 //  Copyright © 2018年 UnionInfo. All rights reserved.
 //
 
+import UIKit
+
 private let CHLog_ScreenWidth    = UIScreen.main.bounds.size.width
 private let CHLog_ScreenHeight   = UIScreen.main.bounds.size.height
 private let CHLog_IS_iPhone_5_8_X      = (UIScreen.main.bounds.size.height == 812)
@@ -61,26 +63,36 @@ extension CHLogDetailViewController {
     }
     
     private func setupSearchBar() {
-        searchBar = UISearchBar(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 49.5))
-        if let searchBar = searchBar {
-            view.addSubview(searchBar)
-        }
+        let searchBar = UISearchBar(frame: CGRect.zero)
+        view.addSubview(searchBar)
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        searchBar.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 0).isActive = true
+        searchBar.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0).isActive = true
+        searchBar.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 0).isActive = true
+        searchBar.heightAnchor.constraint(equalToConstant: 49.5).isActive = true
         
-        searchBar?.backgroundColor = UIColor.white
-        searchBar?.delegate = self
-        searchBar?.barStyle = .default
-        searchBar?.placeholder = "输入字段进行搜索"
-        searchBar?.searchBarStyle = .minimal
+        searchBar.backgroundColor = UIColor.white
+        searchBar.delegate = self
+        searchBar.barStyle = .default
+        searchBar.placeholder = "输入字段进行搜索"
+        searchBar.searchBarStyle = .minimal
+        self.searchBar = searchBar
     }
     
     private func initTextView() {
-        textView = UITextView(frame: CGRect(x: 0, y: 50, width: CHLog_ScreenWidth, height: (CHLog_ScreenHeight - CHLog_Height_navigationBar)))
-        textView?.isEditable = false
-        textView?.backgroundColor = UIColor.black
-        textView?.font = UIFont.systemFont(ofSize: 12)
-        if let textView = textView {
-            view.addSubview(textView)
-        }
+        let textView = UITextView(frame: CGRect(x: 0, y: 50, width: CHLog_ScreenWidth, height: (CHLog_ScreenHeight - CHLog_Height_navigationBar)))
+        textView.isEditable = false
+        textView.backgroundColor = UIColor.black
+        textView.font = UIFont.systemFont(ofSize: 12.0)
+        
+        view.addSubview(textView)
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 49.5).isActive = true
+        textView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0).isActive = true
+        textView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 0).isActive = true
+        textView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: 0).isActive = true
+        
+        self.textView = textView
     }
 }
 
@@ -89,7 +101,7 @@ extension CHLogDetailViewController {
 extension CHLogDetailViewController {
     
     private func setupContent() {
-        textView?.text = response?.describeString()
+        textView?.text = response?.detail_describeString()
         textView?.textColor = (response?.isRequestError ?? false) ? UIColor.red : UIColor.white
     }
     
@@ -100,7 +112,7 @@ extension CHLogDetailViewController {
     }
     
     @objc private func copyAction() {
-        UIPasteboard.general.string = response?.describeString()
+        UIPasteboard.general.string = response?.detail_describeString()
         
         let alert = UIAlertController(title: "提示", message: "已经拷贝至剪切板", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "确定", style: .default, handler: nil))
@@ -113,7 +125,7 @@ extension CHLogDetailViewController {
             return
         }
     
-        let baseString = response?.describeString()
+        let baseString = response?.detail_describeString()
         textView?.attributedText = generateAttributedString(with: key, targetString: baseString ?? "")
     }
     

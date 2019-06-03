@@ -284,6 +284,7 @@ extension CHLog {
     
     @objc fileprivate func showLogView() {
         let vc = CHLogListViewController()
+        //let nav = CHLogNavigationController(rootViewController: vc)
         let nav = UINavigationController.init(rootViewController: vc)
         UIViewController.currentViewController()?.present(nav, animated: true, completion: {
             self.hidden()

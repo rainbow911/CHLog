@@ -76,6 +76,15 @@ extension CHLogItem {
 
 extension CHLogItem {
  
+    public func detail_describeString() -> String {
+        if !isRequest {
+            return logInfo
+        }
+        
+        let info = "        Type：\(requstType)\n      FullUrl：\(requstFullUrl)\n    Header：\((requstHeader as Dictionary).debug_Format_String)\n   Params：\((requstParams as Dictionary).debug_Format_String)\nResponse：\((response as Dictionary).debug_Format_String)"
+        return info
+    }
+    
     public func describeString() -> String {
         if !isRequest {
             return logInfo
@@ -124,5 +133,17 @@ extension CHLogItem {
         //-----
         
         return attributedString
+    }
+}
+
+extension Dictionary {
+    
+    /// 格式化打印字典
+    var debug_Format_String: String {
+        if let data = try? JSONSerialization.data(withJSONObject: self, options: .prettyPrinted),
+            let formatString = String(data: data, encoding: .utf8) {
+            return formatString
+        }
+        return ""
     }
 }
