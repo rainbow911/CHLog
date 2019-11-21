@@ -8,7 +8,6 @@
 
 import UIKit
 
-
 /// 自定义 UIButton
 class CHButton: UIButton {
     private var moveEnable: Bool = true  //是否可以移动

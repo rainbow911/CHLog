@@ -32,6 +32,12 @@ class CHLogDetailViewController: UIViewController {
         
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        title = "接口请求返回详情"
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     
@@ -50,13 +56,11 @@ class CHLogDetailViewController: UIViewController {
 extension CHLogDetailViewController {
     
     private func setupUI() {
-        title = "接口请求返回详情"
         view.backgroundColor = UIColor.white
         navigationController?.navigationBar.isTranslucent = false
         
-        let closeButtonItem = UIBarButtonItem(title: "关闭", style: .plain, target: self, action:  #selector(self.dismissAction))
         let copyButtonItem = UIBarButtonItem(title: "拷贝", style: .plain, target: self, action:  #selector(self.copyAction))
-        navigationItem.rightBarButtonItems = [closeButtonItem, copyButtonItem] //倒序排序的
+        navigationItem.rightBarButtonItem = copyButtonItem
         
         setupSearchBar()
         initTextView()
@@ -116,7 +120,7 @@ extension CHLogDetailViewController {
         
         let alert = UIAlertController(title: "提示", message: "已经拷贝至剪切板", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "确定", style: .default, handler: nil))
-        self.present(alert, animated: true, completion: nil)
+        present(alert, animated: true, completion: nil)
     }
     
     private func searchAction(key: String) {

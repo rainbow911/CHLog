@@ -74,7 +74,7 @@ class CHLogHeader: UIView {
         self.target = target
         
         backgroundColor = logInfo.isRequest ? UIColor.white : UIColor.black
-        titleLabel.attributedText = logInfo.attributedDescribeString()
+        titleLabel.attributedText = logInfo.requestItemString()
         titleLabel.frame = CGRect(x: 15, y: 5, width: self.bounds.size.width - 30, height: self.bounds.size.height - 10)
     }
 }

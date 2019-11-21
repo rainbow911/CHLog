@@ -21,8 +21,10 @@ public class CHLogItem: NSObject {
     var requstType: String = ""             //请求类型
     var requstBaseUrl: String = ""          //请求地址
     var requstFullUrl: String = ""          //请求完整地址
-    var requstHeader: [String: String] = [:]   //请求头
-    var requstParams: [String: String] = [:]   //请求参数
+    var requstHeader: [String: Any] = [:]   //请求头
+    var requstParams: [String: Any] = [:]   //请求参数
+    
+    var httpCode: Int = -1                  //请求HttpCode
     var response: [String: Any] = [:]       //请求返回数据
     
     var responses: [CHLogItem] = []         //请求返回数据列表
@@ -48,6 +50,9 @@ extension CHLogItem {
         
         if let response = item.response {
             logItem.response = response
+        }
+        if let httpCode = item.httpCode {
+            logItem.httpCode = httpCode
         }
         if let isRequestError = item.isError {
             logItem.isRequestError = isRequestError
@@ -81,58 +86,66 @@ extension CHLogItem {
             return logInfo
         }
         
-        let info = "        Type：\(requstType)\n      FullUrl：\(requstFullUrl)\n    Header：\((requstHeader as Dictionary).debug_Format_String)\n   Params：\((requstParams as Dictionary).debug_Format_String)\nResponse：\((response as Dictionary).debug_Format_String)"
+        let info = """
+            Type：\(requstType)
+         FullUrl：\(requstFullUrl)
+          Header：\((requstHeader as Dictionary).debug_Format_String)
+          Params：\((requstParams as Dictionary).debug_Format_String)
+        HttpCode：\(httpCode)
+        Response：\((response as Dictionary).debug_Format_String)
+        """
+        
         return info
     }
     
+    //计算高度，用于拷贝内容
     public func describeString() -> String {
         if !isRequest {
             return logInfo
         }
         
-        let info = "        Type：\(requstType)\n      FullUrl：\(requstFullUrl)\n    Header：\(requstHeader)\n   Params：\(requstParams)\nResponse：\(response)"
+        let info = """
+            Type：\(requstType)
+         FullUrl：\(requstFullUrl)
+          Header：\(requstHeader)
+          Params：\(requstParams)
+        Response：\(response)
+        """
         return info
     }
     
-    public func attributedDescribeString() -> NSMutableAttributedString {
+    public func requestItemString() -> NSMutableAttributedString {
         if !isRequest {
             let color = isError ? UIColor.red : UIColor.white
-            let attributedString = NSMutableAttributedString(string: logInfo, attributes: [.font: UIFont.systemFont(ofSize: 12.0),
-                                                                                           .foregroundColor: color])
+            let attributedString = normalString(with: logInfo, color: color)
             return attributedString
         }
         
         //-----
-        let type = "     type："
-        let attributedString = NSMutableAttributedString(string: type, attributes: [.font: UIFont.boldSystemFont(ofSize: 12.0),
-                                                                                    .foregroundColor: UIColor.black])
-        let typeValue = "\(requstType)    \(requstBaseUrl)\n"
-        attributedString.append(NSMutableAttributedString(string: typeValue, attributes: [.font: UIFont.systemFont(ofSize: 12.0),
-                                                                                          .foregroundColor: UIColor.black]))
+        let attributedString = hightlightString(with: "    type：")
+        attributedString.append(normalString(with: "\(requstType)\n"))
         //-----
-        let fullUrl = "  fullUrl："
-        attributedString.append(NSMutableAttributedString(string: fullUrl, attributes: [.font: UIFont.boldSystemFont(ofSize: 12.0),
-                                                                                        .foregroundColor: UIColor.blue]))
-        let fullUrlValue = "\(requstFullUrl)\n"
-        attributedString.append(NSMutableAttributedString(string: fullUrlValue, attributes: [.font: UIFont.systemFont(ofSize: 12.0),
-                                                                                             .foregroundColor: UIColor.blue]))
-        //-----
-        let header = " header："
-        attributedString.append(NSMutableAttributedString(string: header, attributes: [.font: UIFont.boldSystemFont(ofSize: 12.0),
-                                                                                       .foregroundColor: UIColor.black]))
-        let headerValue = "\(requstHeader)\n"
-        attributedString.append(NSMutableAttributedString(string: headerValue, attributes: [.font: UIFont.systemFont(ofSize: 12.0),
-                                                                                            .foregroundColor: UIColor.black]))
-        //-----
-        let params = "params："
-        attributedString.append(NSMutableAttributedString(string: params, attributes: [.font: UIFont.boldSystemFont(ofSize: 12.0),
-                                                                                       .foregroundColor: UIColor.black]))
-        let paramsValue = "\(requstParams)\n"
-        attributedString.append(NSMutableAttributedString(string: paramsValue, attributes: [.font: UIFont.systemFont(ofSize: 12.0),
-                                                                                            .foregroundColor: UIColor.black]))
+        attributedString.append(hightlightString(with: " fullUrl："))
+        attributedString.append(normalString(with: "\(requstFullUrl)\n", color: UIColor.blue))
+        //-----header
+        attributedString.append(hightlightString(with: "header："))
+        attributedString.append(normalString(with: "\(requstHeader)\n"))
+        //-----params
+        attributedString.append(hightlightString(with: "params："))
+        attributedString.append(normalString(with: "\(requstParams)\n"))
         //-----
         
         return attributedString
+    }
+    
+    private func normalString(with value: String, color: UIColor = UIColor.black) -> NSMutableAttributedString {
+        return NSMutableAttributedString(string: value, attributes: [.font: UIFont.systemFont(ofSize: 12.0),
+                                                                     .foregroundColor: color])
+    }
+    
+    private func hightlightString(with value: String, color: UIColor = UIColor.black) -> NSMutableAttributedString {
+        return NSMutableAttributedString(string: value, attributes: [.font: UIFont.boldSystemFont(ofSize: 14.0),
+                                                                     .foregroundColor: color])
     }
 }
 
@@ -145,5 +158,42 @@ extension Dictionary {
             return formatString
         }
         return ""
+    }
+
+}
+
+extension Dictionary where Key == String {
+    func compare(with params: [String: Any]) -> Bool {
+        var isSame = true
+        
+        //比较两个字典的元素个数，个数不相同，肯定不相同
+        if self.values.count != params.values.count {
+            isSame = false
+        }
+        else {
+            
+            //元素可能的值，int、string、array、dictionary
+            
+            for (key, value) in self {
+                
+                if let value2 = params[key], "\(value)" == "\(value2)" {
+                        
+                }
+                
+                
+            }
+        }
+        
+        
+        //给字典增加一个限定类型，下面的比较非常不准确，因为两个字符串里面的顺序会是错乱的
+        //let value1 = "\(self)"
+        //let value2 = "\(params)"
+        //print("value1 = " + value1)
+        //print("value2 = " + value2)
+        //if value1 != value2 {
+        //    isSame = false
+        //}
+    
+        return isSame
     }
 }

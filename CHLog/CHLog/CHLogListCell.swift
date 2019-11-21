@@ -46,8 +46,8 @@ class CHLogListCell: UITableViewCell {
     // MARK: - updateContent
     
     public func updateContent(response: CHLogItem) {
-        titleLabel.text = response.requstType
+        titleLabel.text = "\(response.requstType)（httpCode：\(response.httpCode)）"
         titleLabel.textColor = response.isRequestError ? UIColor.red : UIColor.black
-        titleLabel.frame = CGRect(x: 60, y: 0, width: self.bounds.size.width - 75, height: self.bounds.size.height)
+        titleLabel.frame = CGRect(x: 20, y: 0, width: self.bounds.size.width - 75, height: self.bounds.size.height)
     }
 }

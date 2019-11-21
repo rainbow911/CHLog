@@ -159,7 +159,7 @@ extension CHLogListViewController {
     @objc private func alertAction() {
         let alert = UIAlertController(title: "提示", message: "单击接口请求列表，就可以拷贝请求参数信息至剪切板", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "确定", style: .default, handler: nil))
-        self.present(alert, animated: true, completion: nil)
+        present(alert, animated: true, completion: nil)
     }
     
     @objc private func dismissAction() {

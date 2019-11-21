@@ -20,15 +20,6 @@ public enum CHLogShowType {
     case error   //错误
 }
 
-public protocol DDRequstItemProtocol {
-    var method: String? { get }
-    var url: String? { get }
-    var headers: [String: String]? { get }
-    var parameters: [String: String]? { get }
-    var response: [String: Any]? { get }
-    var isError: Bool? { get }
-}
-
 // MARK: - API
 
 extension CHLog {
@@ -122,7 +113,8 @@ public class CHLog: NSObject {
         window?.rootViewController = UIViewController()
         window?.rootViewController?.view.backgroundColor = UIColor.clear
         window?.rootViewController?.view.isUserInteractionEnabled = false
-        window?.windowLevel = UIWindow.Level.alert-1
+        window?.windowLevel = UIWindowLevelAlert - 1
+        //window?.windowLevel = UIWindow.Level.alert-1
         window?.alpha = 1.0
         
         let bottom_space = (UIScreen.main.bounds.size.height == 812) ? CGFloat(49+34): CGFloat(49)
@@ -142,7 +134,7 @@ public class CHLog: NSObject {
         let tap = UITapGestureRecognizer(target: self, action: #selector(showLogView))
         logButton?.addGestureRecognizer(tap)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(show), name: UIApplication.didBecomeActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(show), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
     }
 }
 
@@ -191,7 +183,10 @@ extension CHLog {
         var isContainted = false
         var exIndex = -1
         for (index, logInfo) in logInfoArray.enumerated() {
-            if let url = request.url, logInfo.requstFullUrl.isEqual(url) {
+            //判断是否包含的逻辑增加参数判断，不同的参数是属于不用的请求
+            if let url = request.url,
+                logInfo.requstFullUrl.isEqual(url) {
+                //logInfo.requstParams.compare(with: request.parameters ?? [:]) {
                 isContainted = true
                 exIndex = index
                 break
@@ -284,8 +279,10 @@ extension CHLog {
     
     @objc fileprivate func showLogView() {
         let vc = CHLogListViewController()
+        //返回按钮会很大，尽管里面有一个图片的返回按钮
         //let nav = CHLogNavigationController(rootViewController: vc)
         let nav = UINavigationController.init(rootViewController: vc)
+        nav.modalPresentationStyle = .fullScreen
         UIViewController.currentViewController()?.present(nav, animated: true, completion: {
             self.hidden()
         })
