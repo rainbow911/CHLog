@@ -113,8 +113,7 @@ public class CHLog: NSObject {
         window?.rootViewController = UIViewController()
         window?.rootViewController?.view.backgroundColor = UIColor.clear
         window?.rootViewController?.view.isUserInteractionEnabled = false
-        window?.windowLevel = UIWindowLevelAlert - 1
-        //window?.windowLevel = UIWindow.Level.alert-1
+        window?.windowLevel = UIWindow.Level.alert - 1
         window?.alpha = 1.0
         
         let bottom_space = (UIScreen.main.bounds.size.height == 812) ? CGFloat(49+34): CGFloat(49)
@@ -134,7 +133,7 @@ public class CHLog: NSObject {
         let tap = UITapGestureRecognizer(target: self, action: #selector(showLogView))
         logButton?.addGestureRecognizer(tap)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(show), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(show), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
 }
 
