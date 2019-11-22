@@ -2,17 +2,43 @@
 
 ## 说明
 
-* 实现日志打印功能
-    * 1、打印网络请求的日志，需要配合 [CHHook](https://github.com/rainbow911/CHHook) 使用
+* 一个简单的日志查看小插件，主要有下面的两个功能：
+    * 1、打印网络请求的日志
     * 2、打印 Print 日志
+* 如果项目中集成了[CHHook](https://github.com/rainbow911/CHHook)，则可以自动打印网络请求
  
-## 使用说明：
+## 安装
 
-1. Podfile中添加：`pod 'CHLog'`
-2. 执行：`pod install`
+使用CocoaPods集成到项目中，在`Podfile`文件中添加：
 
-## Pod Update
-* 执行命令验证库：`pod lib lint --allow-warnings`
-* 添加Tag并推送：`git tag -a 0.0.1 -m 'Version_0.0.1'; git push origin --tags`
-    * 删除Tag本地/远端：`git tag -d 0.0.1; git push origin :refs/tags/0.0.1`
-* 推送到 Cocoapod 版本库：`pod trunk push CHLog.podspec`
+```ruby
+target '<Your Target Name>' do
+    pod 'CHLog'
+end
+```
+
+然后运行下面的命令：
+
+```bash
+$ pod install
+```
+
+## 使用
+
+初始化：
+
+```swift
+DDDebug.setup(with: .all, listenUrls: nil)
+```
+
+打印网络请求信息：
+
+```swift
+DDDebug.log(with: DDRequstItemProtocol)
+```
+
+打印日志信息：
+
+```swift
+DDDebug.log(with: "这是日志信息...", isError: true)
+```
