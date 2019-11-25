@@ -153,9 +153,13 @@ extension Dictionary {
     
     /// 格式化打印字典
     var debug_Format_String: String {
-        if let data = try? JSONSerialization.data(withJSONObject: self, options: .prettyPrinted),
-            let formatString = String(data: data, encoding: .utf8) {
-            return formatString
+        do {
+            let data = try JSONSerialization.data(withJSONObject: self, options: .prettyPrinted)
+            var info = String(data: data, encoding: .utf8) ?? ""
+            info = info.replacingOccurrences(of: "\\/", with: "/")
+            return info
+        } catch {
+            print("Dictionary extension debug_Format_String an error occurred❌❌❌：\(error)")
         }
         return ""
     }
